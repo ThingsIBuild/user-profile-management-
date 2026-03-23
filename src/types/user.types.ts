@@ -1,6 +1,7 @@
-
+import { HydratedDocument } from "mongoose";
 
 export interface IUser {
+  _id?: string;
   name: string;
   email: string;
   password: string;
@@ -11,7 +12,7 @@ export interface IUser {
 }
 
 
-export interface IUserDocument extends IUser {
-  isModified(arg0: string): unknown;
+  
+export type IUserDocument = HydratedDocument<IUser> & {
   comparePassword(candidatePassword: string): Promise<boolean>;
-}
+};
