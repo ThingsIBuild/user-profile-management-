@@ -10,6 +10,7 @@ const UserSchema: Schema<IUserDocument> = new Schema({
   bio: {type: String},
   location: {type: String},
   website: {type: String},
+  refreshToken: {type: String},
 }, {
   timestamps: true,
 });

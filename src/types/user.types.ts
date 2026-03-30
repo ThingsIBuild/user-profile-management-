@@ -9,6 +9,7 @@ export interface IUser {
   bio?: string;
   location?: string;
   website?: string;
+  refreshToken?: string;
 }
 
 

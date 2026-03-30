@@ -1,5 +1,6 @@
+import { refresh } from "../controllers/auth.controller";
 import { UserRepository } from "../repositories/user.repository";
-import { generateToken } from "../utils/jwt";
+import { generateAccessToken, generateRefreshToken } from "../utils/jwt";
 
 const userRepository = new UserRepository();
 
@@ -14,7 +15,23 @@ export const loginUser = async (email: string) => {
     throw new Error("Invalid email or password");
   }
 
-  const token = generateToken(user._id!);
+  const accessToken = generateAccessToken(user._id!);
+  const refreshToken = generateRefreshToken(user._id!);
 
-  return { user, token };
+  await userRepository.saveRefreshToken(user._id!, refreshToken);
+
+  return { user, accessToken, refreshToken };
+};
+
+export const getUserById = async (id: string) => {
+  return await userRepository.findUserById(id);
+};
+
+export const createRefreshToken = async (userId: string) => {
+  const newRefreshToken = generateRefreshToken(userId);
+  const newAccessToken = generateAccessToken(userId);
+
+  await userRepository.saveRefreshToken(userId, newRefreshToken);
+
+  return { refreshToken: newRefreshToken, accessToken: newAccessToken };
 };

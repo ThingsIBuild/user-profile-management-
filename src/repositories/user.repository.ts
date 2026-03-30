@@ -22,4 +22,11 @@ export class UserRepository {
   async deleteUser(id: string): Promise<IUser | null> {
     return await User.findByIdAndDelete(id);
   }
+  async saveRefreshToken(userId: string, refreshToken: string): Promise<IUserDocument | null> {
+    return await User.findByIdAndUpdate(userId, { refreshToken }, {new: true});
+  }
+
+  async findUserByRefreshToken(refreshToken: string): Promise<IUserDocument | null> {
+    return await User.findOne({ refreshToken });
+  }
 }
