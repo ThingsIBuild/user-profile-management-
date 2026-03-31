@@ -3,17 +3,22 @@ import cors from 'cors';
 import morgan from 'morgan';
 import authRoutes from './routes/auth.routes';
 import userRoutes from './routes/user.routes';
-
+import cookieParser from 'cookie-parser';
 
 
 
 const app: Application = express();
 
+app.use(cookieParser());
+
 app.use(morgan('combined'));
 
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
-app.use(cors());
+app.use(cors({
+  origin: ['*', 'http://localhost:5173', 'http://localhost:3000'],
+  credentials: true,
+}));
 
 // auth routes 
 app.use('/api/auth', authRoutes);

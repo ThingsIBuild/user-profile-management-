@@ -1,6 +1,6 @@
-import { refresh } from "../controllers/auth.controller";
 import { UserRepository } from "../repositories/user.repository";
 import { generateAccessToken, generateRefreshToken } from "../utils/jwt";
+import crypto from "crypto";
 
 const userRepository = new UserRepository();
 
@@ -34,4 +34,53 @@ export const createRefreshToken = async (userId: string) => {
   await userRepository.saveRefreshToken(userId, newRefreshToken);
 
   return { refreshToken: newRefreshToken, accessToken: newAccessToken };
+};
+
+export const logoutUser = async (token: string) => {
+  if (!token) return;
+  await userRepository.clearRefreshToken(token);
+};
+
+// forgot password related services
+
+export const forgotPassword = async (email: string) => {
+  const user = await userRepository.findUserByEmail(email);
+  if (!user) {
+    throw new Error("No user found with that email");
+  }
+
+  // hash the token before saving to database for security
+  const resetToken = crypto.randomBytes(20).toString("hex");
+  const hashedToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+
+  // set token and expiry (1 hour)
+  const expires = new Date(Date.now() + 3600000); // 1 hour from now
+
+  await userRepository.setResetPasswordToken(email, hashedToken, expires);
+
+  // send email (later)
+
+  const resetLink = `http://localhost:5000/api/auth/reset-password?token=${resetToken}`;
+
+  // send the reset link via email (implementation for sending email would go here)
+
+  return resetLink;
+};
+
+// reset password service
+export const resetPassword = async (token: string, newPassword: string) => {
+  // hash the incoming token to compare with database
+  const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+
+  const user = await userRepository.findUserByResetToken(hashedToken);
+
+  if (!user) {
+    throw new Error("Invalid or expired reset token");
+  }
+
+  await userRepository.updatePassword(user._id!, newPassword);
+  return;
 };

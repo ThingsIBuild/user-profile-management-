@@ -11,6 +11,8 @@ const UserSchema: Schema<IUserDocument> = new Schema({
   location: {type: String},
   website: {type: String},
   refreshToken: {type: String},
+  resetPasswordToken: {type: String},
+  resetPasswordExpires: {type: Date},
 }, {
   timestamps: true,
 });

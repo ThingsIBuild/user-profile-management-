@@ -10,6 +10,8 @@ export interface IUser {
   location?: string;
   website?: string;
   refreshToken?: string;
+  resetPasswordToken?: string;
+  resetPasswordExpires?: Date;
 }
 
 
