@@ -13,6 +13,10 @@ const UserSchema: Schema<IUserDocument> = new Schema({
   refreshToken: {type: String},
   resetPasswordToken: {type: String},
   resetPasswordExpires: {type: Date},
+  otp: {type: String},
+  otpExpires: {type: Date},
+  isVerified: {type: Boolean, default: false},
+  role:{type: String, enum: ['user', 'admin'], default: 'user'}
 }, {
   timestamps: true,
 });

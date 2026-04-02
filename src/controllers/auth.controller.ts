@@ -6,7 +6,9 @@ import {
   createRefreshToken,
   logoutUser,
   forgotPassword,
-  resetPassword
+  resetPassword,
+  sendOTP,
+  verifyOTP
   
 } from "../services/auth.services";
 import { verifyRefreshToken } from "../utils/jwt";
@@ -62,7 +64,7 @@ export const refresh = async (req: Request, res: Response) => {
   const token = req.cookies.refreshToken;
 
   // Validate the refresh token and get the user ID from it
-  const userId = verifyRefreshToken(token);
+  const userId = verifyRefreshToken(token );
 
   // find the user by ID
   const user = await getUserById(userId!);
@@ -134,8 +136,8 @@ export const forgotPasswordController = async (req: Request, res: Response) => {
   const { email } = req.body;
     console.log('email', email)
   try {
-    const resetLink = await forgotPassword(email);
-    res.status(200).json({ message: "Password reset link sent to email", resetLink });  
+     await forgotPassword(email);
+    res.status(200).json({ message: "Password reset link sent to email"});  
   } catch (error) {
     const errorMessage =
       error instanceof Error ? error.message : "An error occurred";
@@ -164,3 +166,29 @@ export const resetPasswordController = async (req: Request, res: Response) => {
     res.status(400).json({ message: errorMessage });
   }
 };
+
+export const sendOTPController = async (req: Request, res: Response) => {
+  const { email } = req.body;
+
+  try {
+    await sendOTP(email);
+    res.status(200).json({ message: "OTP sent to email" });
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : "An error occurred";
+    res.status(400).json({ message: errorMessage });
+  }
+}
+
+export const verifyOTPController = async (req: Request, res: Response) => {
+  const { email, otp } = req.body;
+
+  try {
+    await verifyOTP(email, otp);
+    res.status(200).json({ message: "OTP verified successfully" });
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : "An error occurred";
+    res.status(400).json({ message: errorMessage });
+  }
+}

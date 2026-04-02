@@ -21,6 +21,7 @@ export class UserRepository {
   ): Promise<IUser | null> {
     return await User.findByIdAndUpdate(id, updateData, {
       returnDocument: "after",
+      runValidators: true,
     });
   }
 
@@ -80,4 +81,29 @@ export class UserRepository {
     user.resetPasswordExpires = undefined;
     return await user.save();
   }
+
+  async saveOTP(email: string, otp: string, expires: Date): Promise<IUserDocument | null> {
+    return await User.findOneAndUpdate(
+      { email },
+      { otp, otpExpires: expires },
+      { returnDocument: "after" },
+    );
+  }
+  
+  async findUserByOTP(email: string, otp: string): Promise<IUserDocument | null> {
+    return await User.findOne({
+      email,
+      otp,
+      otpExpires: { $gt: new Date() },
+    });
+  }
+
+  async verifyUser(email: string): Promise<IUserDocument | null> {
+    return await User.findOneAndUpdate(
+      { email },
+      { isVerified: true, otp: null, otpExpires: null },
+      { returnDocument: "after" },
+    );
+  }
+
 }

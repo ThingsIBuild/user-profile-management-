@@ -3,6 +3,13 @@ import { UserRepository } from "../repositories/user.repository"
 const userRepository = new UserRepository();
 
 export const getUserProfile = async (userId: string) => {
-  // Implement logic to fetch user profile by userId
     return await userRepository.findUserById(userId)
+};
+
+export const updateUserProfile = async (userId: string, updateData: any) => {
+    return await userRepository.updateUser(userId, updateData)
+};
+
+export const deleteUserProfile = async (userId: string) => {
+    return await userRepository.deleteUser(userId)
 };

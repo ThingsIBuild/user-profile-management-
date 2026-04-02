@@ -7,16 +7,16 @@ import {
 } from "../config/env";
 
 
-export const generateAccessToken = (userId: string) => {
-  const payload = { userId };
+export const generateAccessToken = (userId: string, role: string) => {
+  const payload = { userId , role };
   const options: SignOptions = {
     expiresIn: JWT_EXPIRES_IN as SignOptions["expiresIn"],
   };
   return jwt.sign(payload, JWT_SECRET, options);
 };
 
-export const generateRefreshToken = (userId: string) => {
-  const payload = { userId };
+export const generateRefreshToken = (userId: string, role: string) => {
+  const payload = { userId, role };
   const options: SignOptions = {
     expiresIn: REFRESH_TOKEN_EXPIRES_IN as SignOptions["expiresIn"],
   };

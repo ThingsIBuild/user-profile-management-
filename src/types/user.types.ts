@@ -12,6 +12,10 @@ export interface IUser {
   refreshToken?: string;
   resetPasswordToken?: string;
   resetPasswordExpires?: Date;
+  otp?: string;
+  otpExpires?: Date;
+  isVerified?: boolean;
+  role?: "user" | "admin";
 }
 
 

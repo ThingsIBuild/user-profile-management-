@@ -9,3 +9,8 @@ export const REFRESH_TOKEN_EXPIRES_IN = process.env.REFRESH_TOKEN_EXPIRES_IN as 
 export const MONGO_URI = process.env.MONGO_URI as string;
 export const PORT = process.env.PORT || 5000;
 export const NODE_ENV = process.env.NODE_ENV || 'development';
+
+export const EMAIL_HOST = process.env.EMAIL_HOST as string;
+export const EMAIL_PORT = Number(process.env.EMAIL_PORT) || 587;
+export const EMAIL_USER = process.env.EMAIL_USER as string;
+export const EMAIL_PASS = process.env.EMAIL_PASS as string;

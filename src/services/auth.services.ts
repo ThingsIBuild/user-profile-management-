@@ -1,5 +1,6 @@
 import { UserRepository } from "../repositories/user.repository";
 import { generateAccessToken, generateRefreshToken } from "../utils/jwt";
+import { sendEmail } from "../utils/email";
 import crypto from "crypto";
 
 const userRepository = new UserRepository();
@@ -15,8 +16,8 @@ export const loginUser = async (email: string) => {
     throw new Error("Invalid email or password");
   }
 
-  const accessToken = generateAccessToken(user._id!);
-  const refreshToken = generateRefreshToken(user._id!);
+  const accessToken = generateAccessToken(user._id!, user.role!);
+  const refreshToken = generateRefreshToken(user._id!, user.role!);
 
   await userRepository.saveRefreshToken(user._id!, refreshToken);
 
@@ -28,8 +29,8 @@ export const getUserById = async (id: string) => {
 };
 
 export const createRefreshToken = async (userId: string) => {
-  const newRefreshToken = generateRefreshToken(userId);
-  const newAccessToken = generateAccessToken(userId);
+  const newRefreshToken = generateRefreshToken(userId, "user");
+  const newAccessToken = generateAccessToken(userId, "user");
 
   await userRepository.saveRefreshToken(userId, newRefreshToken);
 
@@ -61,13 +62,15 @@ export const forgotPassword = async (email: string) => {
 
   await userRepository.setResetPasswordToken(email, hashedToken, expires);
 
-  // send email (later)
-
   const resetLink = `http://localhost:5000/api/auth/reset-password?token=${resetToken}`;
 
-  // send the reset link via email (implementation for sending email would go here)
+  await sendEmail(
+    email,
+    "Password Reset Request",
+    `You requested a password reset. Click the link to reset your password: ${resetLink}`,
+  );
 
-  return resetLink;
+  return;
 };
 
 // reset password service
@@ -82,5 +85,39 @@ export const resetPassword = async (token: string, newPassword: string) => {
   }
 
   await userRepository.updatePassword(user._id!, newPassword);
+  return;
+};
+
+export const sendOTP = async (email: string) => {
+  const user = await userRepository.findUserByEmail(email);
+  if (!user) {
+    throw new Error("No user found with that email");
+  }
+
+  const otp = Math.floor(100000 + Math.random() * 900000).toString(); // generate 6 digit OTP
+  const expires = new Date(Date.now() + 10 * 60 * 1000); // OTP valid for 10 minutes
+
+  const hashedOTP = crypto.createHash("sha256").update(otp).digest("hex");
+
+  await userRepository.saveOTP(email, hashedOTP, expires);
+
+  await sendEmail(
+    email,
+    "Your OTP Code",
+    `Your OTP code is ${otp}. It will expire in 10 minutes.`,
+  );
+
+  return;
+};
+
+export const verifyOTP = async (email: string, otp: string) => {
+  const hashedOTP = crypto.createHash("sha256").update(otp).digest("hex");
+
+  const user = await userRepository.findUserByOTP(email, hashedOTP);
+  if (!user) {
+    throw new Error("Invalid or expired OTP");
+  }
+
+  await userRepository.verifyUser(email);
   return;
 };
