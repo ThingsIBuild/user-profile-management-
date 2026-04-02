@@ -8,8 +8,7 @@ import {
   forgotPassword,
   resetPassword,
   sendOTP,
-  verifyOTP
-  
+  verifyOTP,
 } from "../services/auth.services";
 import { verifyRefreshToken } from "../utils/jwt";
 
@@ -30,25 +29,19 @@ export const login = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
 
-    const { accessToken, user, refreshToken } = await loginUser(email);
-
-    const isMatch = await user.comparePassword(password);
-
-    if (!isMatch) {
-      return res.status(400).json({ message: "Invalid email or password" });
-    }
+    const { accessToken, refreshToken } = await loginUser(email, password);
 
     res
       .status(200)
-      .cookie("acessToken", accessToken, {
+      .cookie("accessToken", accessToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
+        sameSite: "lax",
       })
       .cookie("refreshToken", refreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
+        sameSite: "lax",
       })
       .json({
         message: "Login successful",
@@ -64,7 +57,7 @@ export const refresh = async (req: Request, res: Response) => {
   const token = req.cookies.refreshToken;
 
   // Validate the refresh token and get the user ID from it
-  const userId = verifyRefreshToken(token );
+  const userId = verifyRefreshToken(token);
 
   // find the user by ID
   const user = await getUserById(userId!);
@@ -78,15 +71,15 @@ export const refresh = async (req: Request, res: Response) => {
 
   res
     .status(200)
-    .cookie("acessToken", accessToken, {
+    .cookie("accessToken", accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      sameSite: "lax",
     })
     .cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      sameSite: "lax",
     })
     .json({
       message: "Token refreshed successfully",
@@ -102,15 +95,15 @@ export const logout = async (req: Request, res: Response) => {
     }
 
     res
-      .clearCookie("acessToken", {
+      .clearCookie("accessToken", {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
+        sameSite: "lax",
       })
       .clearCookie("refreshToken", {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
+        sameSite: "lax",
       })
       .json({
         message: "Logged out successfully",
@@ -120,24 +113,23 @@ export const logout = async (req: Request, res: Response) => {
       .clearCookie("accessToken", {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
+        sameSite: "lax",
       })
       .clearCookie("refreshToken", {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
+        sameSite: "lax",
       })
       .json({ message: "An error occurred during logout" });
   }
 };
 
-
 export const forgotPasswordController = async (req: Request, res: Response) => {
   const { email } = req.body;
-    console.log('email', email)
+  console.log("email", email);
   try {
-     await forgotPassword(email);
-    res.status(200).json({ message: "Password reset link sent to email"});  
+    await forgotPassword(email);
+    res.status(200).json({ message: "Password reset link sent to email" });
   } catch (error) {
     const errorMessage =
       error instanceof Error ? error.message : "An error occurred";
@@ -147,15 +139,17 @@ export const forgotPasswordController = async (req: Request, res: Response) => {
 
 export const resetPasswordController = async (req: Request, res: Response) => {
   // implementation for resetting password would go here
-  const { token  } = req.query;
-   const { password } = req.body;
+  const { token } = req.query;
+  const { password } = req.body;
 
-   console.log('reset token ',token)
-   console.log('password ',password)
+  console.log("reset token ", token);
+  console.log("password ", password);
 
   try {
     if (!token || typeof token !== "string") {
-      return res.status(400).json({ message: "Invalid or missing reset token" });
+      return res
+        .status(400)
+        .json({ message: "Invalid or missing reset token" });
     }
 
     await resetPassword(token, password);
@@ -178,7 +172,7 @@ export const sendOTPController = async (req: Request, res: Response) => {
       error instanceof Error ? error.message : "An error occurred";
     res.status(400).json({ message: errorMessage });
   }
-}
+};
 
 export const verifyOTPController = async (req: Request, res: Response) => {
   const { email, otp } = req.body;
@@ -191,4 +185,4 @@ export const verifyOTPController = async (req: Request, res: Response) => {
       error instanceof Error ? error.message : "An error occurred";
     res.status(400).json({ message: errorMessage });
   }
-}
+};

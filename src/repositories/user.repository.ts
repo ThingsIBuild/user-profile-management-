@@ -8,11 +8,11 @@ export class UserRepository {
   }
 
   async findUserByEmail(email: string): Promise<IUserDocument | null> {
-    return await User.findOne({ email });
+    return await User.findOne({ email })
   }
 
   async findUserById(id: string): Promise<IUser | null> {
-    return await User.findById(id).select("-password");
+    return await User.findById(id).select("-__v -password -refreshToken -resetPasswordToken -resetPasswordExpires -otp -otpExpires");
   }
 
   async updateUser(

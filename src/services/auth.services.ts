@@ -9,19 +9,27 @@ export const createUser = async (userData: any) => {
   return await userRepository.createUser(userData);
 };
 
-export const loginUser = async (email: string) => {
+export const loginUser = async (email: string, password: string) => {
   const user = await userRepository.findUserByEmail(email);
 
   if (!user) {
     throw new Error("Invalid email or password");
   }
 
-  const accessToken = generateAccessToken(user._id!, user.role!);
-  const refreshToken = generateRefreshToken(user._id!, user.role!);
+  const isMatch = await user.comparePassword(password);
+
+
+  if (!isMatch) {
+    throw new Error("Invalid email or password");
+  }
+
+  const accessToken = generateAccessToken(user._id!, user.role);
+  const refreshToken = generateRefreshToken(user._id!, user.role);
 
   await userRepository.saveRefreshToken(user._id!, refreshToken);
 
   return { user, accessToken, refreshToken };
+
 };
 
 export const getUserById = async (id: string) => {

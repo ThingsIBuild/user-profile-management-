@@ -4,5 +4,6 @@ export default defineConfig({
   test: {
     environment: "node",
     root: ".",
+    exclude: ["dist/**", "node_modules/**"],
   },
 });

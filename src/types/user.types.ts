@@ -22,4 +22,5 @@ export interface IUser {
   
 export type IUserDocument = HydratedDocument<IUser> & {
   comparePassword(candidatePassword: string): Promise<boolean>;
+  role: "user" | "admin";
 };

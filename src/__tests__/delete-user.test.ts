@@ -33,10 +33,11 @@ describe("DELETE /api/users/:id - Role-Based Access Control", () => {
       role: "admin",
     } as any);
 
+    vi.mocked(deleteUserProfile).mockResolvedValue({ _id: targetUserId } as any);
+
     const res = await request(app)
       .delete(`/api/users/${targetUserId}`)
-      // Note: cookie name is "acessToken" (one 's') — matches the typo in auth.middleware.ts
-      .set("Cookie", ["acessToken=fake-admin-token"]);
+      .set("Cookie", ["accessToken=fake-admin-token"]);
 
     expect(res.status).toBe(200);
     expect(res.body.message).toBe("User profile deleted successfully");
@@ -52,7 +53,7 @@ describe("DELETE /api/users/:id - Role-Based Access Control", () => {
 
     const res = await request(app)
       .delete(`/api/users/${targetUserId}`)
-      .set("Cookie", ["acessToken=fake-user-token"]);
+      .set("Cookie", ["accessToken=fake-user-token"]);
 
     expect(res.status).toBe(403);
     expect(res.body.message).toBe("Forbidden");
@@ -75,7 +76,7 @@ describe("DELETE /api/users/:id - Role-Based Access Control", () => {
 
     const res = await request(app)
       .delete(`/api/users/${targetUserId}`)
-      .set("Cookie", ["acessToken=expired-token"]);
+      .set("Cookie", ["accessToken=expired-token"]);
 
     expect(res.status).toBe(401);
     expect(res.body.message).toBe("Unauthorized");
