@@ -18,7 +18,6 @@ export const loginUser = async (email: string, password: string) => {
 
   const isMatch = await user.comparePassword(password);
 
-
   if (!isMatch) {
     throw new Error("Invalid email or password");
   }
@@ -29,7 +28,6 @@ export const loginUser = async (email: string, password: string) => {
   await userRepository.saveRefreshToken(user._id!, refreshToken);
 
   return { user, accessToken, refreshToken };
-
 };
 
 export const getUserById = async (id: string) => {
@@ -70,7 +68,7 @@ export const forgotPassword = async (email: string) => {
 
   await userRepository.setResetPasswordToken(email, hashedToken, expires);
 
-  const resetLink = `http://localhost:5000/api/auth/reset-password?token=${resetToken}`;
+  const resetLink = `http://localhost:5173/reset-password?token=${resetToken}`;
 
   await sendEmail(
     email,

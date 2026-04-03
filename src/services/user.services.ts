@@ -2,6 +2,10 @@ import { UserRepository } from "../repositories/user.repository"
 
 const userRepository = new UserRepository();
 
+export const getAllUsers = async () => {
+    return await userRepository.findAllUsers();
+};
+
 export const getUserProfile = async (userId: string) => {
     return await userRepository.findUserById(userId)
 };

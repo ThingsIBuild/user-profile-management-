@@ -2,7 +2,20 @@ import {
   getUserProfile,
   deleteUserProfile,
   updateUserProfile,
+  getAllUsers,
 } from "../services/user.services";
+
+export const getAllProfiles = async (req: any, res: any) => {
+  try {
+    const users = await getAllUsers();
+    res.status(200).json({ users });
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : "An error occurred";
+    res.status(400).json({ message: errorMessage });
+  }
+};
+
 
 export const getProfile = async (req: any, res: any) => {
   try {

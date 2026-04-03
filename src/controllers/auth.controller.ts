@@ -126,7 +126,6 @@ export const logout = async (req: Request, res: Response) => {
 
 export const forgotPasswordController = async (req: Request, res: Response) => {
   const { email } = req.body;
-  console.log("email", email);
   try {
     await forgotPassword(email);
     res.status(200).json({ message: "Password reset link sent to email" });
@@ -138,7 +137,6 @@ export const forgotPasswordController = async (req: Request, res: Response) => {
 };
 
 export const resetPasswordController = async (req: Request, res: Response) => {
-  // implementation for resetting password would go here
   const { token } = req.query;
   const { password } = req.body;
 
@@ -162,6 +160,7 @@ export const resetPasswordController = async (req: Request, res: Response) => {
 };
 
 export const sendOTPController = async (req: Request, res: Response) => {
+  
   const { email } = req.body;
 
   try {

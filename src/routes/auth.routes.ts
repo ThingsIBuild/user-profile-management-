@@ -18,7 +18,7 @@ router.post("/refresh", refresh);
 router.post("/logout", logout);
 router.post("/forgot-password", forgotPasswordController);
 router.post("/reset-password", resetPasswordController);
-router.post("/send-otp", sendOTPController);
-router.post("/verify-otp", verifyOTPController);
+router.post("/send-verification-email", sendOTPController);
+router.post("/verify-email", verifyOTPController);
 
 export default router;

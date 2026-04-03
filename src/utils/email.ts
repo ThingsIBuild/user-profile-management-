@@ -19,5 +19,3 @@ export async function sendEmail(to: string, subject: string, text: string) {
     text,
   });
 }
-
-console.log(EMAIL_HOST, EMAIL_PORT, EMAIL_USER, EMAIL_PASS)

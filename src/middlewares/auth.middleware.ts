@@ -27,22 +27,22 @@ export const authMiddleware = (
   }
 };
 
-
-export const authorizeOwnerOrAdmin = () => {
+export const authorizeAdminOnly = () => {
   return (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-    const userId = req.user?.userId;
-    const targetId = req.params.id;
+    const user = req.user;
 
-   
-
-    if (req.user.role === "admin") {
-      return next();
+    if (!user) {
+      return res.status(401).json({
+        message: "Unauthorized: Please login",
+      });
     }
 
-    if (userId === targetId) {
-      return next();
+    if (user.role !== "admin") {
+      return res.status(403).json({
+        message: "Access denied: Only admin can delete users",
+      });
     }
 
-    return res.status(403).json({ message: "Forbidden" });
+    next();
   };
 };

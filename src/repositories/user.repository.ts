@@ -7,6 +7,10 @@ export class UserRepository {
     return await user.save();
   }
 
+ async findAllUsers(): Promise<IUser[]> {
+    return await User.find().select("-__v -password -refreshToken -resetPasswordToken -resetPasswordExpires -otp -otpExpires");
+  }
+
   async findUserByEmail(email: string): Promise<IUserDocument | null> {
     return await User.findOne({ email })
   }
