@@ -1,42 +1,37 @@
-import express , {Application} from 'express';
-import cors from 'cors';
-import morgan from 'morgan';
-import authRoutes from './routes/auth.routes';
-import userRoutes from './routes/user.routes';
-import cookieParser from 'cookie-parser';
+import express , {type Application , type Request, type Response} from "express"
+import cors from "cors"
+import systemRoutes from "./modules/system/system.routes"
+import { getDBStatus } from "./config/db"
+import path from "node:path"
+import {requestLogger} from './middleware/logger.middleware'
 
+const app:Application  = express()
 
-
-const app: Application = express();
-
-app.use(cookieParser());
-
-app.use(morgan('combined'));
-
-app.use(express.json());
-app.use(express.urlencoded({extended: true}));
+app.use(requestLogger)
+app.use(express.json())
+app.use(express.urlencoded({extended:true}))
 app.use(cors({
-  origin: ['*', 'http://localhost:5173', 'http://localhost:3000'],
-  credentials: true,
-}));
+    origin:"*",
+    credentials:true
+}))
 
-// auth routes 
-app.use('/api/auth', authRoutes);
+// 👇 SET VIEW ENGINE
+app.set("view engine", "ejs");
 
-// user routes
-app.use('/api/users', userRoutes);
+// 👇 SET VIEWS DIRECTORY
+app.set("views", path.join(__dirname, "../src/views"));
 
-app.get('/', (req, res) => {
-  const serverinfo = {
-    name: 'User Management API',
-    version: '1.0.0',
-    description: 'API for managing users with authentication and authorization',
-    ip: req.ip,
-    port: req.socket.localPort,
-    user_agent: req.headers['user-agent'] || 'Unknown',
-    
-  };
-  res.status(200).json({ status: 'OK', data: serverinfo });
+
+app.use('/api/system', systemRoutes)
+
+app.get("/", (req: Request, res: Response) => {
+  const db = getDBStatus();
+
+  res.render("index", {
+    env: process.env.NODE_ENV,
+    uptime: `${Math.floor(process.uptime())} sec`,
+    db
+  });
 });
 
 

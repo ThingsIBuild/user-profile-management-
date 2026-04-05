@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>System Dashboard</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+    }
+
+    .container {
+      padding: 30px;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: #1e293b;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      transition: transform 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+    }
+
+    .title {
+      font-size: 14px;
+      color: #94a3b8;
+      margin-bottom: 8px;
+    }
+
+    .value {
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    /* STATUS COLORS */
+    .green { color: #22c55e; }
+    .red { color: #ef4444; }
+    .yellow { color: #facc15; }
+
+    .badge {
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: bold;
+      display: inline-block;
+    }
+
+    .badge.green {
+      background: rgba(34,197,94,0.2);
+      color: #22c55e;
+    }
+
+    .badge.red {
+      background: rgba(239,68,68,0.2);
+      color: #ef4444;
+    }
+
+    .badge.yellow {
+      background: rgba(250,204,21,0.2);
+      color: #facc15;
+    }
+
+    .link {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 10px 15px;
+      background: #3b82f6;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>🚀 System Monitoring Dashboard</h1>
+
+    <div class="grid">
+
+      <!-- ENV -->
+      <div class="card">
+        <div class="title">Environment</div>
+        <div class="value"><%= env %></div>
+      </div>
+
+      <!-- UPTIME -->
+      <div class="card">
+        <div class="title">Uptime</div>
+        <div class="value"><%= uptime %></div>
+      </div>
+
+      <!-- DATABASE STATUS -->
+      <div class="card">
+        <div class="title">Database Status</div>
+
+        <div class="value">
+          <span class="badge <%= db.color %>">
+            <%= db.status.toUpperCase() %>
+          </span>
+        </div>
+
+        <p style="margin-top:10px; font-size:12px; color:#94a3b8;">
+          Code: <%= db.code %>
+        </p>
+      </div>
+
+    </div>
+
+    <!-- LINK -->
+    <a href="/api/system/info" class="link">
+      View Full System Info →
+    </a>
+
+  </div>
+</body>
+</html>
